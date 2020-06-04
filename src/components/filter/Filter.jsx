@@ -6,6 +6,7 @@ import BairrosFilter from "./filters/BairrosFilter";
 import { estados, cidades, bairros, paises } from "./mocks/api";
 import "./style.scss";
 import FilterContextProvider, { FilterContext } from "./context";
+import shortid from "shortid";
 
 export const WrapperFilter = () => {
   return (
@@ -88,26 +89,30 @@ function Filter() {
           </div>
         </>
       )}
-      <table className="tbBairros">
-        {!!bairrosState.filter((b) => b.checked).length && (
-          <tr>
-            <th>País</th>
-            <th>Estado</th>
-            <th>Cidade</th>
-            <th>Bairro</th>
-          </tr>
-        )}
-        {bairrosState
-          .filter((b) => b.checked)
-          .map((bairro) => (
+      {!!bairrosState.filter((b) => b.checked).length && (
+        <table className="tbBairros">
+          <thead>
             <tr>
-              <td>{bairro.paisId}</td>
-              <td>{bairro.estadoId}</td>
-              <td>{bairro.cidadeId}</td>
-              <td>{bairro.bairroId}</td>
+              <th>País</th>
+              <th>Estado</th>
+              <th>Cidade</th>
+              <th>Bairro</th>
             </tr>
-          ))}
-      </table>
+          </thead>
+          <tbody>
+            {bairrosState
+              .filter((b) => b.checked)
+              .map((bairro) => (
+                <tr key={shortid.generate()}>
+                  <td>{bairro.paisId}</td>
+                  <td>{bairro.estadoId}</td>
+                  <td>{bairro.cidadeId}</td>
+                  <td>{bairro.bairroId}</td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }
