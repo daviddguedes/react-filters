@@ -1,0 +1,44 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+div.divRoot {
+    display: flex;
+    padding: 1rem;
+    height: 100vh;
+
+    div.loading {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        background-color: burlywood;
+    }
+}
+
+.checkColumns {
+    margin: 0 1rem;
+
+    .checkboxContainer {
+        margin-bottom: 1rem;
+        border: 1px solid grey;
+        padding: 1rem;
+    }
+
+    h4.title-checkbox {
+        color: #7c7a7a;
+        border-bottom: 1px solid grey;
+        margin-bottom: 1rem;
+    }
+
+    .checkbox {
+        margin: .5rem 0;
+
+        label {
+            span {
+                margin-left: .3rem;
+            }
+        }
+    }
+}
