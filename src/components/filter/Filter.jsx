@@ -22,7 +22,18 @@ const getItemsFromAPI = () => {
 };
 
 function Filter() {
-  const [,setInitialState,,setPaisesState,,setEstadosState,,setCidadesState,,setBairrosState,] = useContext(FilterContext);
+  const [
+    ,
+    setInitialState,
+    ,
+    setPaisesState,
+    ,
+    setEstadosState,
+    ,
+    setCidadesState,
+    bairrosState,
+    setBairrosState,
+  ] = useContext(FilterContext);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -77,6 +88,26 @@ function Filter() {
           </div>
         </>
       )}
+      <table className="tbBairros">
+        {!!bairrosState.filter((b) => b.checked).length && (
+          <tr>
+            <th>País</th>
+            <th>Estado</th>
+            <th>Cidade</th>
+            <th>Bairro</th>
+          </tr>
+        )}
+        {bairrosState
+          .filter((b) => b.checked)
+          .map((bairro) => (
+            <tr>
+              <td>{bairro.paisId}</td>
+              <td>{bairro.estadoId}</td>
+              <td>{bairro.cidadeId}</td>
+              <td>{bairro.bairroId}</td>
+            </tr>
+          ))}
+      </table>
     </div>
   );
 }

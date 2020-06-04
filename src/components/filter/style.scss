@@ -15,6 +15,16 @@ div.divRoot {
         justify-content: center;
         background-color: burlywood;
     }
+
+    table.tbBairros tr th {
+        font-weight: bold;
+        font-size: 1.5rem;
+    }
+
+    table.tbBairros tr th, table.tbBairros tr td {
+        border: 1px solid #666;
+        padding: 1rem;
+    }
 }
 
 .checkColumns {

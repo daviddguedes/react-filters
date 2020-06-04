@@ -102,7 +102,7 @@ function FilterContextProvider(props) {
 
    // On select bairros
   useEffect(() => {
-    console.log("bairros...");
+    console.log(bairrosState);
   }, [bairrosState]);
 
   return (
