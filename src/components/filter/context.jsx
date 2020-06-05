@@ -49,6 +49,7 @@ function FilterContextProvider(props) {
     );
 
     if (!estadosState.some((p) => p.checked) && estadosState.length) {
+      initialState.cidades.forEach(cidade => cidade.checked = false);
       const cidadesFilteredByEstadosVisible = initialState.cidades.filter(
         (cidade) => {
           return estadosState.some((estado) => {
@@ -80,6 +81,7 @@ function FilterContextProvider(props) {
     );
 
     if (!cidadesState.some((p) => p.checked) && cidadesState.length) {
+      initialState.bairros.forEach(bairro => bairro.checked = false);
       const bairrosFilteredByCidadesVisible = initialState.bairros.filter(
         (bairro) => {
           return cidadesState.some((cidade) => {
