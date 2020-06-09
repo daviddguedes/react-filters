@@ -28,7 +28,6 @@ const filterReducer = (state, action) => {
       };
 
     case "UPDATE_BAIRROS":
-      console.log("action update bairros");
       return {
         ...state,
         bairrosState: action.payload,

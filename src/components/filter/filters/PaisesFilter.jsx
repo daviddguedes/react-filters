@@ -4,9 +4,6 @@ import { FilterContext } from "../context";
 
 function PaisesFilter() {
   console.log('montou o componente paises')
-  // const [, , paisesState, setPaisesState, , , , , , ,] = useContext(
-  //   FilterContext
-  // );
 
   const [state, dispatch] = useContext(FilterContext);
 
@@ -29,9 +26,6 @@ function PaisesFilter() {
       dispatch({type: 'UPDATE_ESTADOS', payload: [...estadosFilteredByPaisesChecked]});
     }
   }, [state.paisesState]);
-
-  // const onHandleChangeCheckbox = (paramPaises) =>
-  //   setPaisesState((state) => [...paramPaises]);
 
   return (
     <Checkbox

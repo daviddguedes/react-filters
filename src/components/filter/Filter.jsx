@@ -27,43 +27,53 @@ function Filter() {
   const [loading, setLoading] = useState(true);
   const [values, setValues] = useState(INITIAL_STATE);
 
-  const initialDispatch = useCallback(() => {
-    return dispatch({
-      type: "UPDATE_STATE",
-      payload: values.initialState,
-    });
-  }, [values.initialState]);
+  const initialDispatch = useCallback(
+    () =>
+      dispatch({
+        type: "UPDATE_STATE",
+        payload: values.initialState,
+      }),
+    [values.initialState]
+  );
 
-  const paisesDispatch = useCallback(() => {
-    return dispatch({
-      type: "UPDATE_PAISES",
-      payload: values.paisesState.map((i) => ({
-        ...i,
-        checked: i.paisId === "Brazil" ? true : false,
-      })),
-    });
-  }, [values.paisesState]);
+  const paisesDispatch = useCallback(
+    () =>
+      dispatch({
+        type: "UPDATE_PAISES",
+        payload: values.paisesState.map((i) => ({
+          ...i,
+          checked: i.paisId === "Brazil" ? true : false,
+        })),
+      }),
+    [values.paisesState]
+  );
 
-  const estadosDispatch = useCallback(() => {
-    return dispatch({
-      type: "UPDATE_ESTADOS",
-      payload: values.estadosState,
-    });
-  }, [values.estadosState]);
+  const estadosDispatch = useCallback(
+    () =>
+      dispatch({
+        type: "UPDATE_ESTADOS",
+        payload: values.estadosState,
+      }),
+    [values.estadosState]
+  );
 
-  const cidadesDispatch = useCallback(() => {
-    return dispatch({
-      type: "UPDATE_CIDADES",
-      payload: values.cidadesState,
-    });
-  }, [values.cidadesState]);
+  const cidadesDispatch = useCallback(
+    () =>
+      dispatch({
+        type: "UPDATE_CIDADES",
+        payload: values.cidadesState,
+      }),
+    [values.cidadesState]
+  );
 
-  const bairrosDispatch = useCallback(() => {
-    return dispatch({
-      type: "UPDATE_BAIRROS",
-      payload: values.bairrosState,
-    });
-  }, [values.bairrosState]);
+  const bairrosDispatch = useCallback(
+    () =>
+      dispatch({
+        type: "UPDATE_BAIRROS",
+        payload: values.bairrosState,
+      }),
+    [values.bairrosState]
+  );
 
   useEffect(() => {
     getItemsFromAPI()
@@ -75,12 +85,12 @@ function Filter() {
           bairros: bairros.map((i) => ({ ...i, checked: false })),
         };
 
-        setValues(oldValues => ({
+        setValues((oldValues) => ({
           initialState: JSON.parse(JSON.stringify(value)),
           paisesState: value.paises,
           estadosState: value.estados,
           cidadesState: value.cidades,
-          bairrosState: value.bairros
+          bairrosState: value.bairros,
         }));
 
         setLoading(false);
@@ -91,12 +101,14 @@ function Filter() {
   }, []);
 
   useEffect(() => {
-    initialDispatch();
-    paisesDispatch();
-    estadosDispatch();
-    cidadesDispatch();
-    bairrosDispatch();
-  }, [values]);
+    if (!loading) {
+      initialDispatch();
+      paisesDispatch();
+      estadosDispatch();
+      cidadesDispatch();
+      bairrosDispatch();
+    }
+  }, [loading]);
 
   return (
     <div className="divRoot">

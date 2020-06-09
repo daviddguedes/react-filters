@@ -3,14 +3,6 @@ import Checkbox from "../Checkbox";
 import { FilterContext } from "../context";
 
 function BairrosFilter() {
-  console.log('montou o componente bairros')
-  // const [, , , , , , , , bairrosState, setBairrosState] = useContext(
-  //   FilterContext
-  // );
-
-  // const onHandleChangeCheckbox = (paramBairros) =>
-  //   setBairrosState((state) => [...paramBairros]);
-
   const [state, dispatch] = useContext(FilterContext);
 
   const onHandleChangeCheckbox = (paramBairros) =>
