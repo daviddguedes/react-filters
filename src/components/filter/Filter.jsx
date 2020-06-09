@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useCallback } from "react";
 import PaisesFilter from "./filters/PaisesFilter";
 import EstadosFilter from "./filters/EstadosFilter";
 import CidadesFilter from "./filters/CidadesFilter";
 import BairrosFilter from "./filters/BairrosFilter";
 import { estados, cidades, bairros, paises } from "./mocks/api";
 import "./style.scss";
-import FilterContextProvider, { FilterContext } from "./context";
+import FilterContextProvider, { FilterContext, INITIAL_STATE } from "./context";
 import shortid from "shortid";
 
 export const WrapperFilter = () => {
@@ -23,43 +23,80 @@ const getItemsFromAPI = () => {
 };
 
 function Filter() {
-  const [
-    ,
-    setInitialState,
-    ,
-    setPaisesState,
-    ,
-    setEstadosState,
-    ,
-    setCidadesState,
-    bairrosState,
-    setBairrosState,
-  ] = useContext(FilterContext);
+  const [state, dispatch] = useContext(FilterContext);
   const [loading, setLoading] = useState(true);
+  const [values, setValues] = useState(INITIAL_STATE);
+
+  const initialDispatch = useCallback(() => {
+    return dispatch({
+      type: "UPDATE_STATE",
+      payload: values.initialState,
+    });
+  }, [values.initialState]);
+
+  const paisesDispatch = useCallback(() => {
+    return dispatch({
+      type: "UPDATE_PAISES",
+      payload: values.paisesState.map((i) => ({
+        ...i,
+        checked: i.paisId === "Brazil" ? true : false,
+      })),
+    });
+  }, [values.paisesState]);
+
+  const estadosDispatch = useCallback(() => {
+    return dispatch({
+      type: "UPDATE_ESTADOS",
+      payload: values.estadosState,
+    });
+  }, [values.estadosState]);
+
+  const cidadesDispatch = useCallback(() => {
+    return dispatch({
+      type: "UPDATE_CIDADES",
+      payload: values.cidadesState,
+    });
+  }, [values.cidadesState]);
+
+  const bairrosDispatch = useCallback(() => {
+    return dispatch({
+      type: "UPDATE_BAIRROS",
+      payload: values.bairrosState,
+    });
+  }, [values.bairrosState]);
 
   useEffect(() => {
     getItemsFromAPI()
       .then(({ paises, estados, cidades, bairros }) => {
         const value = {
-          paises: paises.map((i) => ({
-            ...i,
-            checked: i.paisId === "Brazil" ? true : false,
-          })),
+          paises: paises.map((i) => ({ ...i, checked: false })),
           estados: estados.map((i) => ({ ...i, checked: false })),
           cidades: cidades.map((i) => ({ ...i, checked: false })),
           bairros: bairros.map((i) => ({ ...i, checked: false })),
         };
-        setInitialState(value);
-        setPaisesState(value.paises);
-        setEstadosState(value.estados);
-        setCidadesState(value.cidades);
-        setBairrosState(value.bairros);
+
+        setValues(oldValues => ({
+          initialState: JSON.parse(JSON.stringify(value)),
+          paisesState: value.paises,
+          estadosState: value.estados,
+          cidadesState: value.cidades,
+          bairrosState: value.bairros
+        }));
+
         setLoading(false);
       })
       .catch((error) => {
         console.log("An error has been occurred...");
       });
   }, []);
+
+  useEffect(() => {
+    initialDispatch();
+    paisesDispatch();
+    estadosDispatch();
+    cidadesDispatch();
+    bairrosDispatch();
+  }, [values]);
 
   return (
     <div className="divRoot">
@@ -89,7 +126,7 @@ function Filter() {
           </div>
         </>
       )}
-      {!!bairrosState.filter((b) => b.checked).length && (
+      {!!state.bairrosState.filter((b) => b.checked).length && (
         <table className="tbBairros">
           <thead>
             <tr>
@@ -100,7 +137,7 @@ function Filter() {
             </tr>
           </thead>
           <tbody>
-            {bairrosState
+            {state.bairrosState
               .filter((b) => b.checked)
               .map((bairro) => (
                 <tr key={shortid.generate()}>

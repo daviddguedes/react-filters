@@ -3,6 +3,7 @@ import shortid from "shortid";
 
 const Checkbox = ({ items, handleCheckboxChange, label, title }) => {
   const handleChange = (item) => {
+    console.log('handleChange')
     item.checked = !item.checked;
     handleCheckboxChange(items);
   };

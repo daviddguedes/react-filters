@@ -3,16 +3,22 @@ import Checkbox from "../Checkbox";
 import { FilterContext } from "../context";
 
 function BairrosFilter() {
-  const [, , , , , , , , bairrosState, setBairrosState] = useContext(
-    FilterContext
-  );
+  console.log('montou o componente bairros')
+  // const [, , , , , , , , bairrosState, setBairrosState] = useContext(
+  //   FilterContext
+  // );
+
+  // const onHandleChangeCheckbox = (paramBairros) =>
+  //   setBairrosState((state) => [...paramBairros]);
+
+  const [state, dispatch] = useContext(FilterContext);
 
   const onHandleChangeCheckbox = (paramBairros) =>
-    setBairrosState((state) => [...paramBairros]);
+    dispatch({ type: "UPDATE_BAIRROS", payload: [...paramBairros] });
 
   return (
     <Checkbox
-      items={bairrosState}
+      items={state.bairrosState}
       handleCheckboxChange={onHandleChangeCheckbox}
       label="bairroId"
       title="BAIRROS"

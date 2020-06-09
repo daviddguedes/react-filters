@@ -1,18 +1,41 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import Checkbox from "../Checkbox";
 import { FilterContext } from "../context";
 
 function PaisesFilter() {
-  const [, , paisesState, setPaisesState, , , , , , ,] = useContext(
-    FilterContext
-  );
+  console.log('montou o componente paises')
+  // const [, , paisesState, setPaisesState, , , , , , ,] = useContext(
+  //   FilterContext
+  // );
+
+  const [state, dispatch] = useContext(FilterContext);
 
   const onHandleChangeCheckbox = (paramPaises) =>
-    setPaisesState((state) => [...paramPaises]);
+    dispatch({ type: "UPDATE_PAISES", payload: [...paramPaises] });
+
+  useEffect(() => {
+    const estadosClone = JSON.parse(JSON.stringify(state.initialState.estados));
+    const estadosFilteredByPaisesChecked = estadosClone.filter(
+      (estado) => {
+        return state.paisesState.some((pais) => {
+          return pais.paisId === estado.paisId && pais.checked;
+        });
+      }
+    );
+
+    if (!state.paisesState.some((p) => p.checked)) {
+      dispatch({type: 'UPDATE_ESTADOS', payload: estadosClone});
+    } else {
+      dispatch({type: 'UPDATE_ESTADOS', payload: [...estadosFilteredByPaisesChecked]});
+    }
+  }, [state.paisesState]);
+
+  // const onHandleChangeCheckbox = (paramPaises) =>
+  //   setPaisesState((state) => [...paramPaises]);
 
   return (
     <Checkbox
-      items={paisesState}
+      items={state.paisesState}
       handleCheckboxChange={onHandleChangeCheckbox}
       label="paisId"
       title="PAíSES"
