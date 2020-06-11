@@ -1,19 +1,20 @@
-const filterReducer = (state, action) => {
-  switch (action.type) {
-    case "UPDATE_STATE":
-      return {
-        ...state,
-        initialState: action.payload,
-      };
-      break;
+import { useReducer } from "react";
 
+const INITIAL_STATE = {
+  paisesState: [],
+  estadosState: [],
+  cidadesState: [],
+  bairrosState: [],
+};
+
+const reducer = (state, action) => {
+  console.log(action.type, action.payload)
+  switch (action.type) {
     case "UPDATE_PAISES":
-      console.log("action update paises");
       return {
         ...state,
         paisesState: action.payload,
       };
-      break;
 
     case "UPDATE_ESTADOS":
       return {
@@ -35,8 +36,13 @@ const filterReducer = (state, action) => {
 
     default:
       return state;
-      break;
   }
 };
 
-export default filterReducer;
+const useFilterState = () => {
+  const [filterState, filterDispatch] = useReducer(reducer, INITIAL_STATE);
+
+  return { filterState, filterDispatch };
+};
+
+export default useFilterState;

@@ -1,59 +1,70 @@
 import React, { useContext, useEffect } from "react";
 import Checkbox from "../Checkbox";
-import { FilterContext } from "../context";
+import FilterContext from "../store/context";
 
 function CidadesFilter() {
-  // const [, , , , , , cidadesState, setCidadesState, , ,] = useContext(
-  //   FilterContext
-  // );
-
-  // const onHandleChangeCheckbox = (paramCidades) =>
-  //   setCidadesState((state) => [...paramCidades]);
-
-  const [state, dispatch] = useContext(FilterContext);
+  const { filterState, filterDispatch } = useContext(FilterContext);
 
   const onHandleChangeCheckbox = (paramCidades) =>
-    dispatch({ type: "UPDATE_CIDADES", payload: [...paramCidades] });
+    filterDispatch({ type: "UPDATE_CIDADES", payload: [...paramCidades] });
 
-    useEffect(() => {
-      const bairrosClone = JSON.parse(JSON.stringify(state.initialState.bairros));
-      const bairrosFilteredByCidadesChecked = bairrosClone.filter(
-        (bairro) => {
-          return state.cidadesState.some((cidade) => {
-            return cidade.cidadeId === bairro.cidadeId && cidade.checked;
-          });
+  useEffect(() => {
+    if (filterState.estadosState && filterState.estadosState.length) {
+      const cidadesClone = JSON.parse(JSON.stringify(filterState.cidadesState));
+      const resetCidadesList = cidadesClone.map((est) => {
+        est.checked = false;
+        est.visible = true;
+        return est;
+      });
+      const cidadesFilteredByEstadosChecked = filterState.cidadesState.map(
+        (cidade) => {
+          let cid = { ...cidade };
+          if (
+            filterState.estadosState.some(
+              (estado) => cidade.estadoId === estado.estadoId && estado.checked
+            )
+          ) {
+            cid.visible = true;
+          } else {
+            cid.visible = false;
+          }
+          return cid;
         }
       );
-  
-      if (
-        !state.cidadesState.some((p) => p.checked) &&
-        state.cidadesState.length
-      ) {
-        const bairrosFilteredByCidadesVisible = bairrosClone.filter(
-          (bairro) => {
-            return state.cidadesState.some((cidade) => {
-              return cidade.cidadeId === bairro.cidadeId;
-            });
-          }
-        );
-        dispatch({
-          type: "UPDATE_BAIRROS",
-          payload: [...bairrosFilteredByCidadesVisible],
-        });
-      } else if (!state.cidadesState.length) {
-        dispatch({ type: "UPDATE_BAIRROS", payload: [] });
+
+      if (!filterState.estadosState.some((p) => p.checked)) {
+        if (filterState.estadosState.every((p) => p.visible)) {
+          filterDispatch({ type: "UPDATE_CIDADES", payload: resetCidadesList });
+        } else {
+          const cidadesFilteredByEstadosVisible = filterState.cidadesState.map(
+            (cidade) => {
+              let cid = { ...cidade };
+              if (
+                filterState.estadosState.some(
+                  (estado) => cidade.estadoId === estado.estadoId && estado.visible
+                )
+              ) {
+                cid.visible = true;
+              } else {
+                cid.visible = false;
+              }
+              return cid;
+            }
+          );
+          filterDispatch({ type: "UPDATE_CIDADES", payload: cidadesFilteredByEstadosVisible });
+        }
       } else {
-        console.log('aqui...bairros')
-        dispatch({
-          type: "UPDATE_BAIRROS",
-          payload: [...bairrosFilteredByCidadesChecked],
+        filterDispatch({
+          type: "UPDATE_CIDADES",
+          payload: cidadesFilteredByEstadosChecked,
         });
       }
-    }, [state.cidadesState]);
+    }
+  }, [filterState.estadosState, filterDispatch]);
 
   return (
     <Checkbox
-      items={state.cidadesState}
+      items={filterState.cidadesState}
       handleCheckboxChange={onHandleChangeCheckbox}
       label="cidadeId"
       title="CIDADES"

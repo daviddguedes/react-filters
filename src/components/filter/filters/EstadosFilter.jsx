@@ -1,49 +1,52 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import Checkbox from "../Checkbox";
-import { FilterContext } from "../context";
+import FilterContext from "../store/context";
+import { useEffect } from "react";
 
 function EstadosFilter() {
-  // const [, , , , estadosState, setEstadosState, , , , ,] = useContext(
-  //   FilterContext
-  // );
+  const { filterState, filterDispatch } = useContext(FilterContext);
 
-  // const onHandleChangeCheckbox = (paramEstados) =>
-  //   setEstadosState((state) => [...paramEstados]);
-
-  const [state, dispatch] = useContext(FilterContext);
-
-  const onHandleChangeCheckbox = (paramEstados) =>
-    dispatch({ type: "UPDATE_ESTADOS", payload: [...paramEstados] });
+  const onHandleChangeCheckbox = (paramEstados) => {
+    filterDispatch({ type: "UPDATE_ESTADOS", payload: [...paramEstados] });
+  };
 
   useEffect(() => {
-    const cidadesClone = JSON.parse(JSON.stringify(state.initialState.cidades));
-    const cidadesFilteredByEstadosChecked = cidadesClone.filter(
-      (cidade) => {
-        return state.estadosState.some((estado) => {
-          return estado.estadoId === cidade.estadoId && estado.checked;
-        });
-      }
-    );
-
-    if (!state.estadosState.some((p) => p.checked) && state.estadosState.length) {
-      const cidadesFilteredByEstadosVisible = cidadesClone.filter(
-        (cidade) => {
-          return state.estadosState.some((estado) => {
-            return estado.estadoId === cidade.estadoId;
-          });
+    if (filterState.paisesState && filterState.paisesState.length) {
+      const resetEstadosList = filterState.estadosState.map((est) => {
+        est.checked = false;
+        est.visible = true;
+        return est;
+      });
+      const estadosFilteredByPaisesChecked = filterState.estadosState.map(
+        (estado) => {
+          let est = { ...estado };
+          if (
+            filterState.paisesState.some(
+              (pais) => pais.paisId === estado.paisId && pais.checked
+            )
+          ) {
+            est.visible = true;
+          } else {
+            est.visible = false;
+          }
+          return est;
         }
       );
-      dispatch({type: 'UPDATE_CIDADES', payload: [...cidadesFilteredByEstadosVisible]});
-    } else if (!state.estadosState.length) {
-      dispatch({type: 'UPDATE_CIDADES', payload: []});
-    } else {
-      dispatch({type: 'UPDATE_CIDADES', payload: [...cidadesFilteredByEstadosChecked]});
+
+      if (!filterState.paisesState.some((p) => p.checked)) {
+        filterDispatch({ type: "UPDATE_ESTADOS", payload: resetEstadosList });
+      } else {
+        filterDispatch({
+          type: "UPDATE_ESTADOS",
+          payload: estadosFilteredByPaisesChecked,
+        });
+      }
     }
-  }, [state.estadosState]);
+  }, [filterState.paisesState, filterDispatch]);
 
   return (
     <Checkbox
-      items={state.estadosState}
+      items={filterState.estadosState}
       handleCheckboxChange={onHandleChangeCheckbox}
       label="estadoId"
       title="ESTADOS"

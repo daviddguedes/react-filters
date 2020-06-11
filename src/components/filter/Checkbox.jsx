@@ -3,7 +3,6 @@ import shortid from "shortid";
 
 const Checkbox = ({ items, handleCheckboxChange, label, title }) => {
   const handleChange = (item) => {
-    console.log('handleChange')
     item.checked = !item.checked;
     handleCheckboxChange(items);
   };
@@ -11,19 +10,22 @@ const Checkbox = ({ items, handleCheckboxChange, label, title }) => {
   return (
     <div>
       <h4 className="title-checkbox">{title}</h4>
-      {items.map((item) => (
-        <div className="checkbox" key={shortid.generate()}>
-          <label>
-            <input
-              type="checkbox"
-              value={item.label}
-              checked={item.checked}
-              onChange={() => handleChange(item)}
-            />
-            <span>{item[label]}</span>
-          </label>
-        </div>
-      ))}
+      {Array.isArray(items) &&
+        items
+          .filter((i) => i.visible)
+          .map((item) => (
+            <div className="checkbox" key={shortid.generate()}>
+              <label>
+                <input
+                  type="checkbox"
+                  value={item.label}
+                  checked={item.checked}
+                  onChange={() => handleChange(item)}
+                />
+                <span>{item[label]}</span>
+              </label>
+            </div>
+          ))}
     </div>
   );
 };

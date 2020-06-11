@@ -1,18 +1,21 @@
 import React, { useContext, useEffect, useState, useCallback } from "react";
+import shortid from "shortid";
+
+import FilterStateProvider from "./store/FilterStateProvider";
+import FilterContext from "./store/context";
 import PaisesFilter from "./filters/PaisesFilter";
 import EstadosFilter from "./filters/EstadosFilter";
 import CidadesFilter from "./filters/CidadesFilter";
 import BairrosFilter from "./filters/BairrosFilter";
-import { estados, cidades, bairros, paises } from "./mocks/api";
 import "./style.scss";
-import FilterContextProvider, { FilterContext, INITIAL_STATE } from "./context";
-import shortid from "shortid";
+
+import { estados, cidades, bairros, paises } from "./mocks/api";
 
 export const WrapperFilter = () => {
   return (
-    <FilterContextProvider>
+    <FilterStateProvider>
       <Filter />
-    </FilterContextProvider>
+    </FilterStateProvider>
   );
 };
 
@@ -23,66 +26,30 @@ const getItemsFromAPI = () => {
 };
 
 function Filter() {
-  const [state, dispatch] = useContext(FilterContext);
+  const { filterState, filterDispatch } = useContext(FilterContext);
   const [loading, setLoading] = useState(true);
-  const [values, setValues] = useState(INITIAL_STATE);
-
-  const initialDispatch = useCallback(
-    () =>
-      dispatch({
-        type: "UPDATE_STATE",
-        payload: values.initialState,
-      }),
-    [values.initialState]
-  );
-
-  const paisesDispatch = useCallback(
-    () =>
-      dispatch({
-        type: "UPDATE_PAISES",
-        payload: values.paisesState.map((i) => ({
-          ...i,
-          checked: i.paisId === "Brazil" ? true : false,
-        })),
-      }),
-    [values.paisesState]
-  );
-
-  const estadosDispatch = useCallback(
-    () =>
-      dispatch({
-        type: "UPDATE_ESTADOS",
-        payload: values.estadosState,
-      }),
-    [values.estadosState]
-  );
-
-  const cidadesDispatch = useCallback(
-    () =>
-      dispatch({
-        type: "UPDATE_CIDADES",
-        payload: values.cidadesState,
-      }),
-    [values.cidadesState]
-  );
-
-  const bairrosDispatch = useCallback(
-    () =>
-      dispatch({
-        type: "UPDATE_BAIRROS",
-        payload: values.bairrosState,
-      }),
-    [values.bairrosState]
-  );
+  const [values, setValues] = useState({});
 
   useEffect(() => {
     getItemsFromAPI()
       .then(({ paises, estados, cidades, bairros }) => {
         const value = {
-          paises: paises.map((i) => ({ ...i, checked: false })),
-          estados: estados.map((i) => ({ ...i, checked: false })),
-          cidades: cidades.map((i) => ({ ...i, checked: false })),
-          bairros: bairros.map((i) => ({ ...i, checked: false })),
+          paises: paises.map((i) => ({ ...i, checked: false, visible: true })),
+          estados: estados.map((i) => ({
+            ...i,
+            checked: false,
+            visible: true,
+          })),
+          cidades: cidades.map((i) => ({
+            ...i,
+            checked: false,
+            visible: true,
+          })),
+          bairros: bairros.map((i) => ({
+            ...i,
+            checked: false,
+            visible: true,
+          })),
         };
 
         setValues((oldValues) => ({
@@ -100,15 +67,37 @@ function Filter() {
       });
   }, []);
 
+  const callDispatch = useCallback(({ type, payload }) => {
+    return filterDispatch({ type, payload });
+  }, [filterDispatch]);
+
   useEffect(() => {
     if (!loading) {
-      initialDispatch();
-      paisesDispatch();
-      estadosDispatch();
-      cidadesDispatch();
-      bairrosDispatch();
+      callDispatch({
+        type: "UPDATE_PAISES",
+        payload: values.paisesState.map((i) => ({
+          ...i,
+          checked: i.paisId === "Brazil" ? true : false,
+          visible: true,
+        })),
+      });
+
+      callDispatch({
+        type: "UPDATE_ESTADOS",
+        payload: values.estadosState,
+      });
+
+      callDispatch({
+        type: "UPDATE_CIDADES",
+        payload: values.cidadesState,
+      });
+
+      callDispatch({
+        type: "UPDATE_BAIRROS",
+        payload: values.bairrosState,
+      });
     }
-  }, [loading]);
+  }, [values, loading, callDispatch]);
 
   return (
     <div className="divRoot">
@@ -138,30 +127,31 @@ function Filter() {
           </div>
         </>
       )}
-      {!!state.bairrosState.filter((b) => b.checked).length && (
-        <table className="tbBairros">
-          <thead>
-            <tr>
-              <th>País</th>
-              <th>Estado</th>
-              <th>Cidade</th>
-              <th>Bairro</th>
-            </tr>
-          </thead>
-          <tbody>
-            {state.bairrosState
-              .filter((b) => b.checked)
-              .map((bairro) => (
-                <tr key={shortid.generate()}>
-                  <td>{bairro.paisId}</td>
-                  <td>{bairro.estadoId}</td>
-                  <td>{bairro.cidadeId}</td>
-                  <td>{bairro.bairroId}</td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
-      )}
+      {filterState.bairrosState &&
+        !!filterState.bairrosState.filter((b) => b.checked).length && (
+          <table className="tbBairros">
+            <thead>
+              <tr>
+                <th>País</th>
+                <th>Estado</th>
+                <th>Cidade</th>
+                <th>Bairro</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filterState.bairrosState
+                .filter((b) => b.checked)
+                .map((bairro) => (
+                  <tr key={shortid.generate()}>
+                    <td>{bairro.paisId}</td>
+                    <td>{bairro.estadoId}</td>
+                    <td>{bairro.cidadeId}</td>
+                    <td>{bairro.bairroId}</td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        )}
     </div>
   );
 }
